@@ -1,0 +1,70 @@
+plugins {
+    id 'java-library'
+    id 'idea'
+    id 'org.springframework.boot' version '2.1.6.RELEASE'
+}
+
+ext {
+    lombokVersion = '1.18.8'
+    slf4jVersion = '1.7.28'
+    logbackVersion = '1.2.3'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group 'al'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    //config log facade
+    all*.exclude group: 'commons-logging', module: 'commons-logging'
+    all*.exclude group: 'log4j', module: 'log4j'
+    all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    all*.exclude group: 'org.slf4j', module: 'slf4j-jcl'
+    all*.exclude group: 'org.slf4j', module: 'slf4j-jdk14'
+
+    //exclude junit4
+    all*.exclude group: 'junit', module: 'junit'
+
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+dependencies {
+    compile("org.slf4j:slf4j-api:${slf4jVersion}") //included spring-boot-starter-web
+    compile("org.slf4j:jcl-over-slf4j:${slf4jVersion}")
+    compile("org.slf4j:log4j-over-slf4j:${slf4jVersion}")
+    compile("org.slf4j:jul-to-slf4j:${slf4jVersion}") //included spring-boot-starter-web
+    compile("ch.qos.logback:logback-core:${logbackVersion}") //included spring-boot-starter-web
+    compile("ch.qos.logback:logback-classic:${logbackVersion}") //included spring-boot-starter-web
+
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
+    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+    testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    compile group: 'com.google.guava', name: 'guava', version: '28.0-jre'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+
+    testCompile("org.mockito:mockito-core:3.0.0")
+    testCompile("org.assertj:assertj-core:3.13.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.5.1")
+    testImplementation ("org.springframework.boot:spring-boot-starter-test")
+}
+
+test {
+    useJUnitPlatform()
+}
+
